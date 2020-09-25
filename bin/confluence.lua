@@ -153,6 +153,16 @@ function Link(s, src, tit, attr)
         return string.format('<ac:link><ri:page ri:space-key="%s" '..
                              'ri:content-title="%s" /></ac:link>', space, page)
      end
+  elseif s and string.sub(s, 1, 5) == "jira:" then
+     -- [jira:param1=value1;param2=value2](OPTIONAL_LINK)
+    local params = s:match('jira:(.*)')
+    local html = '<ac:structured-macro ac:name="jiraissues">'
+    if params then
+      for parameter, value in params:gmatch('(%w+)=([^;]*)') do
+        html = html .. string.format('<ac:parameter ac:name="%s">%s</ac:parameter>', parameter, value)
+      end
+    end
+    return html .. '</ac:structured-macro>'
   elseif src and string.sub(src, 1, 1) == "#" then
     -- [Anchor Link](#anchor), taken from https://confluence.atlassian.com/doc/confluence-storage-format-790796544.html#ConfluenceStorageFormat-Links
     return LinkToAnchor(escape(string.sub(src, 2, -1), true), s)
